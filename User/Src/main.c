@@ -70,7 +70,30 @@ int main(void)
 
 	LCD_SetFont(&Font8);
 	LCD_SetColors(LCD_COLOR_MAGENTA, LCD_COLOR_BLACK); // TextColor, BackColor
-	LCD_DisplayStringAtLineMode(39, "copyright xyz", CENTER_MODE);
+	LCD_DisplayStringAtLineMode(39, "Florian Spitzbart", CENTER_MODE);
+
+	GPIO_InitTypeDef userButton;
+	userButton.Alternate=0;
+	userButton.Mode=GPIO_MODE_IT_RISING;
+	userButton.Pull=GPIO_NOPULL;
+	userButton.Pin=GPIO_PIN_0;
+	userButton.Speed=GPIO_SPEED_FAST;
+	HAL_GPIO_Init(GPIOA, &userButton);
+
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+
+	EXTI0_IRQHandler();
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+
+	GPIO_InitTypeDef test;
+	test.Alternate=0;
+	test.Mode=GPIO_MODE_OUTPUT_PP;
+	test.Pin=GPIO_PIN_13;
+	test.Pull=GPIO_NOPULL;
+	test.Speed=GPIO_SPEED_FAST;
+	HAL_GPIO_Init(GPIOG, &test);
+
+
 
 	int cnt = 0;
 	/* Infinite loop */
@@ -87,10 +110,10 @@ int main(void)
 		printf("   Timer: %.1f", cnt/10.0);
 
 		// test touch interface
-		int x, y;
+		/*int x, y;
 		if (GetTouchState(&x, &y)) {
 			LCD_FillCircle(x, y, 5);
-		}
+		}*/
 
 
 	}
