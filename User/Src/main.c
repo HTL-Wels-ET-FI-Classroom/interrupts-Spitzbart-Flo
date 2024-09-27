@@ -24,7 +24,7 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-
+static volatile int cnt=0;
 /* Private function prototypes -----------------------------------------------*/
 static int GetUserButtonPressed(void);
 static int GetTouchState (int *xCoord, int *yCoord);
@@ -36,6 +36,11 @@ void SysTick_Handler(void)
 {
 	HAL_IncTick();
 }
+void EXTI0_IRQHandler(void){
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+	cnt++;
+}
+
 
 /**
  * @brief  The application entry point.
@@ -82,8 +87,7 @@ int main(void)
 
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
-	EXTI0_IRQHandler();
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
+
 
 	GPIO_InitTypeDef test;
 	test.Alternate=0;
@@ -107,6 +111,8 @@ int main(void)
 		LCD_SetFont(&Font20);
 		LCD_SetTextColor(LCD_COLOR_BLUE);
 		LCD_SetPrintPosition(5, 0);
+		printf("   Timer: %.1f", cnt/10.0);
+		LCD_SetPrintPosition(7, 0);
 		printf("   Timer: %.1f", cnt/10.0);
 
 		// test touch interface
