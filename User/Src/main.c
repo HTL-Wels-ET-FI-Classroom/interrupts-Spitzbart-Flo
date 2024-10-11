@@ -24,7 +24,9 @@
 /* Private define ------------------------------------------------------------*/
 
 /* Private variables ---------------------------------------------------------*/
-static volatile int cnt=0;
+static volatile int cntPress=0;
+static volatile int farbe=0;
+static volatile int time=0;
 /* Private function prototypes -----------------------------------------------*/
 static int GetUserButtonPressed(void);
 static int GetTouchState (int *xCoord, int *yCoord);
@@ -35,12 +37,20 @@ static int GetTouchState (int *xCoord, int *yCoord);
 void SysTick_Handler(void)
 {
 	HAL_IncTick();
+	time++;
+
 }
 void EXTI0_IRQHandler(void){
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
-	cnt++;
+	cntPress++;
 }
-
+void EXTI3_IRQHandler(void){
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
+	farbe++;
+	if(farbe==3){
+		farbe=0;
+	}
+}
 
 /**
  * @brief  The application entry point.
@@ -87,33 +97,49 @@ int main(void)
 
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
+	GPIO_InitTypeDef quelle;
+	quelle.Alternate=0;
+	quelle.Mode=GPIO_MODE_IT_RISING;
+	quelle.Pull=GPIO_PULLUP;
+	quelle.Pin=GPIO_PIN_3;
+	quelle.Speed=GPIO_SPEED_FAST;
+	HAL_GPIO_Init(GPIOG, &quelle);
+
+	HAL_NVIC_EnableIRQ(EXTI3_IRQn);
 
 
-	GPIO_InitTypeDef test;
-	test.Alternate=0;
-	test.Mode=GPIO_MODE_OUTPUT_PP;
-	test.Pin=GPIO_PIN_13;
-	test.Pull=GPIO_NOPULL;
-	test.Speed=GPIO_SPEED_FAST;
-	HAL_GPIO_Init(GPIOG, &test);
 
 
 
-	int cnt = 0;
+	int cnt1 = 0;
+	int cnt2 = 0;
+	int colour[3]={LCD_COLOR_BLUE, LCD_COLOR_RED, LCD_COLOR_GREEN};
 	/* Infinite loop */
 	while (1)
 	{
 		//execute main loop every 100ms
-		HAL_Delay(100);
+		//HAL_Delay(100);
+
 
 		// display timer
-		cnt++;
 		LCD_SetFont(&Font20);
-		LCD_SetTextColor(LCD_COLOR_BLUE);
 		LCD_SetPrintPosition(5, 0);
-		printf("   Timer: %.1f", cnt/10.0);
+
+		LCD_SetTextColor(colour[farbe]);
+		printf("   Timer: %.1f", cnt1/1.0);
 		LCD_SetPrintPosition(7, 0);
-		printf("   Timer: %.1f", cnt/10.0);
+		printf("   Timer: %.1f", cnt2/1.0);
+		if((cntPress%2)==0){
+			if(time==100){
+				cnt1++;
+			}
+		}else if((cntPress%2)==1){
+			if(time==100){
+				cnt2++;
+			}
+		}
+
+
 
 		// test touch interface
 		/*int x, y;
