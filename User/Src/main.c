@@ -26,7 +26,8 @@
 /* Private variables ---------------------------------------------------------*/
 static volatile int cntPress=0;
 static volatile int farbe=0;
-static volatile int time=0;
+static volatile int time1=0;
+static volatile int time2=0;
 /* Private function prototypes -----------------------------------------------*/
 static int GetUserButtonPressed(void);
 static int GetTouchState (int *xCoord, int *yCoord);
@@ -37,8 +38,11 @@ static int GetTouchState (int *xCoord, int *yCoord);
 void SysTick_Handler(void)
 {
 	HAL_IncTick();
-	time++;
-
+	if((cntPress%2)==0){
+		time1++;
+	}else if((cntPress%2)==1){
+		time2++;
+	}
 }
 void EXTI0_IRQHandler(void){
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
@@ -111,8 +115,8 @@ int main(void)
 
 
 
-	int cnt1 = 0;
-	int cnt2 = 0;
+	//int cnt1 = 0;
+	//int cnt2 = 0;
 	int colour[3]={LCD_COLOR_BLUE, LCD_COLOR_RED, LCD_COLOR_GREEN};
 	/* Infinite loop */
 	while (1)
@@ -124,20 +128,12 @@ int main(void)
 		// display timer
 		LCD_SetFont(&Font20);
 		LCD_SetPrintPosition(5, 0);
-
 		LCD_SetTextColor(colour[farbe]);
-		printf("   Timer: %.1f", cnt1/1.0);
+		printf("   Timer: %.1f", time1/1000.0);
 		LCD_SetPrintPosition(7, 0);
-		printf("   Timer: %.1f", cnt2/1.0);
-		if((cntPress%2)==0){
-			if(time==100){
-				cnt1++;
-			}
-		}else if((cntPress%2)==1){
-			if(time==100){
-				cnt2++;
-			}
-		}
+		printf("   Timer: %.1f", time2/1000.0);
+
+
 
 
 
