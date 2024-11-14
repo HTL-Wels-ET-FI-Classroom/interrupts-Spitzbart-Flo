@@ -115,8 +115,7 @@ int main(void)
 
 
 
-	//int cnt1 = 0;
-	//int cnt2 = 0;
+
 	int colour[3]={LCD_COLOR_BLUE, LCD_COLOR_RED, LCD_COLOR_GREEN};
 	/* Infinite loop */
 	while (1)
@@ -129,19 +128,9 @@ int main(void)
 		LCD_SetFont(&Font20);
 		LCD_SetPrintPosition(5, 0);
 		LCD_SetTextColor(colour[farbe]);
-		printf("   Timer: %.1f", time1/1000.0);
+		printf("   Timer1: %.2f", time1/1000.0);
 		LCD_SetPrintPosition(7, 0);
-		printf("   Timer: %.1f", time2/1000.0);
-
-
-
-
-
-		// test touch interface
-		/*int x, y;
-		if (GetTouchState(&x, &y)) {
-			LCD_FillCircle(x, y, 5);
-		}*/
+		printf("   Timer2: %.2f", time2/1000.0);
 
 
 	}
